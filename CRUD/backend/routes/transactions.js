@@ -14,15 +14,16 @@ router.get('/', (req, res) => {
 });
 
 
+
 // POST /api/transactions - создать новую операцию
 router.post('/', (req, res) => {
-  const { amount, category_id, type, description, date } = req.body;
+  const { amount, category_id, type, description  } = req.body;
   
-  if (!amount || !type || !date) {
+  if (!amount || !type ) {
     return res.status(400).json({ error: 'Amount, type and date are required' });
   }
 
-  Transaction.create({ amount, category_id, type, description, date }, function(err) {
+  Transaction.create({ amount, category_id, type, description  }, function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;

@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const transactionsRouter = require('./routes/transactions');
+const categoriesRouter = require('./routes/categories'); // новый импорт
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +14,7 @@ app.use(express.json());
 
 // Подключаем роуты
 app.use('/api/transactions', transactionsRouter);
+app.use('/api/categories', categoriesRouter); // новый роут
 
 // Тестовый маршрут
 app.get('/api/test', (req, res) => {

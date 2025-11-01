@@ -16,8 +16,9 @@
     </div>
 
     <FinanceCharts
+      v-if="transactions.length > 0"
       :transactions="transactions"
-      :expensesByCategory="expensesByCategory"
+      :expensesByCategory="expensesByCategory" 
       :monthlyStats="monthlyStats"
     />
 

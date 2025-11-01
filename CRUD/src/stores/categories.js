@@ -7,7 +7,7 @@ export const useCategoriesStore = defineStore('categories', {
   state: () => ({
     categories: [],
     loading: false,
-    error: null
+    error: null,
   }),
 
   actions: {
@@ -23,11 +23,12 @@ export const useCategoriesStore = defineStore('categories', {
       } finally {
         this.loading = false
       }
-    }
+    },
   },
 
   getters: {
-    incomeCategories: (state) => state.categories.filter(c => c.type === 'income'),
-    expenseCategories: (state) => state.categories.filter(c => c.type === 'expense')
+    incomeCategories: (state) => state.categories.filter((c) => c.type === 'income'),
+    expenseCategories: (state) => state.categories.filter((c) => c.type === 'expense'),
+
   }
 })

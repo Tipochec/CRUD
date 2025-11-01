@@ -97,6 +97,7 @@ export default {
 
     async submitForm() {
       // Валидация
+
       if (!this.form.amount || this.form.amount <= 0) {
         this.error = 'Введите корректную сумму'
         return

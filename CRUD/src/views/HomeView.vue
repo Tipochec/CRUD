@@ -15,6 +15,12 @@
       </div>
     </div>
 
+    <FinanceCharts
+      :transactions="transactions"
+      :expensesByCategory="expensesByCategory"
+      :monthlyStats="monthlyStats"
+    />
+
     <div class="transactions-section">
       <h2>Последние операции</h2>
 
@@ -49,13 +55,25 @@
 <script>
 import { useTransactionsStore } from '@/stores/transactions'
 import { mapState, mapActions, mapGetters } from 'pinia'
+import FinanceCharts from '@/components/FinanceCharts.vue'
 
 export default {
   name: 'HomeView',
 
+  components: {
+    FinanceCharts,
+  },
   computed: {
     ...mapState(useTransactionsStore, ['transactions', 'loading', 'error']),
     ...mapGetters(useTransactionsStore, ['totalIncome', 'totalExpenses', 'balance']),
+    ...mapState(useTransactionsStore, ['transactions', 'loading', 'error']),
+    ...mapGetters(useTransactionsStore, [
+      'totalIncome',
+      'totalExpenses',
+      'balance',
+      'expensesByCategory',
+      'monthlyStats',
+    ]),
   },
 
   methods: {
@@ -68,6 +86,10 @@ export default {
 
   async mounted() {
     await this.fetchTransactions()
+    console.log('📊 Все транзакции:', JSON.parse(JSON.stringify(this.transactions))) // ⬅️ ДОБАВЬ ЭТУ СТРОКУ
+    if (this.transactions.length > 0) {
+      console.log('🔍 Первая транзакция:', JSON.parse(JSON.stringify(this.transactions[0]))) // ⬅️ И ЭТУ
+    }
   },
 }
 </script>

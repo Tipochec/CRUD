@@ -15,6 +15,7 @@ class Transaction {
   }
 
   static create(transactionData, callback) {
+
     const { amount, category_id, type, description, category_name } = transactionData
 
     // Автоматически подставляем текущую дату

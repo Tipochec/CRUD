@@ -25,24 +25,24 @@ export const useTransactionsStore = defineStore('transactions', {
       }
     },
 
-async addTransaction(transactionData) {
-  try {
-    console.log('🔄 Store: Отправляю данные в бэкенд:', transactionData)
-    console.log('🔄 Store: URL запроса:', `${API_URL}/transactions`)
-    
-    const response = await axios.post(`${API_URL}/transactions`, transactionData)
-    
-    console.log('✅ Store: Ответ от бэкенда:', response.data)
-    await this.fetchTransactions()
-    return response.data
-  } catch (error) {
-    console.error('❌ Store: Ошибка при добавлении:', error)
-    console.error('❌ Store: Данные запроса:', error.config?.data)
-    console.error('❌ Store: Статус ошибки:', error.response?.status)
-    console.error('❌ Store: Текст ошибки:', error.response?.data)
-    throw error
-  }
-},
+    async addTransaction(transactionData) {
+      try {
+        console.log('🔄 Store: Отправляю данные в бэкенд:', transactionData)
+        console.log('🔄 Store: URL запроса:', `${API_URL}/transactions`)
+
+        const response = await axios.post(`${API_URL}/transactions`, transactionData)
+
+        console.log('✅ Store: Ответ от бэкенда:', response.data)
+        await this.fetchTransactions()
+        return response.data
+      } catch (error) {
+        console.error('❌ Store: Ошибка при добавлении:', error)
+        console.error('❌ Store: Данные запроса:', error.config?.data)
+        console.error('❌ Store: Статус ошибки:', error.response?.status)
+        console.error('❌ Store: Текст ошибки:', error.response?.data)
+        throw error
+      }
+    },
 
     async deleteTransaction(id) {
       try {
@@ -70,6 +70,46 @@ async addTransaction(transactionData) {
 
     balance: (state) => {
       return state.totalIncome - state.totalExpenses
+    },
+    expensesByCategory: (state) => {
+      const expenses = state.transactions.filter((t) => t.type === 'expense')
+      const categories = {}
+
+      expenses.forEach((transaction) => {
+        const category = transaction.category_name || 'Другое'
+        categories[category] = (categories[category] || 0) + parseFloat(transaction.amount)
+      })
+
+      return Object.entries(categories).map(([name, amount]) => ({
+        name,
+        amount,
+      }))
+    },
+
+    monthlyStats: (state) => {
+      const months = {}
+
+      state.transactions.forEach((transaction) => {
+        const date = new Date(transaction.created_at)
+        const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`
+
+        if (!months[monthKey]) {
+          months[monthKey] = { income: 0, expense: 0 }
+        }
+
+        if (transaction.type === 'income') {
+          months[monthKey].income += parseFloat(transaction.amount)
+        } else {
+          months[monthKey].expense += parseFloat(transaction.amount)
+        }
+      })
+
+      return Object.entries(months)
+        .map(([month, data]) => ({
+          month,
+          ...data,
+        }))
+        .slice(-6) // последние 6 месяцев
     },
   },
 })

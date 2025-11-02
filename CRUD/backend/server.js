@@ -1,28 +1,32 @@
-const express = require('express');
-const cors = require('cors');
-const transactionsRouter = require('./routes/transactions');
-const categoriesRouter = require('./routes/categories'); // новый импорт
+const express = require('express'); //express - фреймворк для создания сервера
+const cors = require('cors'); //cors - middleware для кросс-доменных запросов
+const transactionsRouter = require('./routes/transactions'); //импорт ссылок на роутер
+const categoriesRouter = require('./routes/categories'); // импорт ссылок на роутер
 
 
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express(); //Создаем Express приложение
+const PORT = process.env.PORT || 3000; //Порт берем из переменных окружения или используем 3000 по умолчанию
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors()); //разрешает запросы с любого домена (Vue dev server на 5173 порту)
+app.use(express.json()); //автоматически парсит JSON из тела запросов
 
 // Подключаем роуты
-app.use('/api/transactions', transactionsRouter);
-app.use('/api/categories', categoriesRouter); // новый роут
+app.use('/api/transactions', transactionsRouter); //ссылка с сайте backenda куда подключаем роуты
+app.use('/api/categories', categoriesRouter); // ссылка с сайте backenda куда подключаем роуты
 
-// Тестовый маршрут
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is working! 🚀' });
-});
 
 // Запуск сервера
-app.listen(PORT, () => {
+app.listen(PORT, () => { //запуск сервера по указаному порту
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📊 API available at http://localhost:${PORT}/api/`);
 });
+
+// require - это функция Node.js для импорта модулей
+// Ищет модуль 'express' в папке node_modules
+// Загружает его код в память
+// Возвращает объект, который мы сохраняем в переменную express
+
+// CORS — Браузер блокирует запросы между разными доменами/портами и мы просытми словами этой функцией разрешаем использовать GET POST DELETE и тд.
+// express.json() — Когда к тебе приходят данные в формате JSON - автоматически превращай их в нормальный JavaScript объект, чтобы мне было удобно с ними работать

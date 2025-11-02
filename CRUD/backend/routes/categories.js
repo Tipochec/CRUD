@@ -1,27 +1,26 @@
-const express = require('express');
-const router = express.Router();
-const Category = require('../models/Category');
+const express = require('express'); // express — фреймоврк для создания сервера
+const router = express.Router(); //создает "мини-приложение" только для категорий
+const Category = require('../models/Category'); // импорт модели для работы с базой данных
 
-// GET /api/categories - получить все категории
-router.get('/', (req, res) => {
-  Category.getAll((err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+
+router.get('/', (req, res) => { // запрос на получение
+  Category.getAll((err, rows) => { //вызывает всё из модели
+    if (err) { //если ошибка
+      res.status(500).json({ error: err.message }); //выводим
+      return;// есил всё ок, то всё ок
     }
-    res.json(rows);
+    res.json(rows); // иначе же возвращаем строки
   });
 });
 
-// GET /api/categories/:type - получить категории по типу
-router.get('/:type', (req, res) => {
-  const { type } = req.params;
-  Category.getByType(type, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
+router.get('/:type', (req, res) => { // тут запрос на получение но с параметром ":" и именем параметра type
+  const { type } = req.params; // создаём переменную
+  Category.getByType(type, (err, rows) => { // вызывает Категории по типу
+    if (err) {//если ошибка
+      res.status(500).json({ error: err.message }); //выводим
+      return;// есил всё ок, то всё ок
     }
-    res.json(rows);
+    res.json(rows);// иначе же возвращаем строки
   });
 });
 

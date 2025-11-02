@@ -1,7 +1,7 @@
 <template>
   <div class="finance-charts">
     <h2>📊 Статистика</h2>
-    
+
     <div class="charts-grid">
       <!-- Диаграмма расходов по категориям -->
       <div class="chart-container">
@@ -23,26 +23,27 @@ import { Chart, registerables } from 'chart.js'
 
 export default {
   name: 'FinanceCharts',
-  
-props: {
+
+  props: {
     transactions: {
       type: Array,
-      required: true
+      required: true,
     },
     expensesByCategory: {
       type: Array,
-      required: true
+      required: true,
     },
     monthlyStats: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
+  emits: ['categoryClick', 'monthClick'],
 
   data() {
     return {
       expensesChart: null,
-      monthlyChart: null
+      monthlyChart: null,
     }
   },
 
@@ -59,45 +60,54 @@ props: {
 
     renderExpensesChart() {
       const ctx = this.$refs.expensesChart.getContext('2d')
-      
+
       // 🔥 РЕАЛЬНЫЕ ДАННЫЕ
-      const labels = this.expensesByCategory.map(item => item.name)
-      const data = this.expensesByCategory.map(item => item.amount)
+      const labels = this.expensesByCategory.map((item) => item.name)
+      const data = this.expensesByCategory.map((item) => item.amount)
       const colors = this.generateColors(labels.length)
 
       this.expensesChart = new Chart(ctx, {
         type: 'pie',
         data: {
           labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: colors
-          }]
+          datasets: [
+            {
+              data: data,
+              backgroundColor: colors,
+            },
+          ],
         },
         options: {
           responsive: true,
           plugins: {
             legend: {
-              position: 'bottom'
+              position: 'bottom',
             },
             tooltip: {
               callbacks: {
                 label: (context) => {
                   const value = context.parsed
                   return `${context.label}: ${value} ₽`
-                }
-              }
+                },
+              },
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index
+              const category = this.expensesByCategory[index]
+              this.$emit('categoryClick', category.name)
             }
-          }
-        }
+          },
+        },
       })
     },
 
     renderMonthlyChart() {
       const ctx = this.$refs.monthlyChart.getContext('2d')
-      
+
       // 🔥 РЕАЛЬНЫЕ ДАННЫЕ
-      const labels = this.monthlyStats.map(item => {
+      const labels = this.monthlyStats.map((item) => {
         const [year, month] = item.month.split('-')
         return `${month}/${year}`
       })
@@ -109,15 +119,15 @@ props: {
           datasets: [
             {
               label: 'Доходы',
-              data: this.monthlyStats.map(item => item.income),
-              backgroundColor: '#28a745'
+              data: this.monthlyStats.map((item) => item.income),
+              backgroundColor: '#28a745',
             },
             {
-              label: 'Расходы', 
-              data: this.monthlyStats.map(item => item.expense),
-              backgroundColor: '#dc3545'
-            }
-          ]
+              label: 'Расходы',
+              data: this.monthlyStats.map((item) => item.expense),
+              backgroundColor: '#dc3545',
+            },
+          ],
         },
         options: {
           responsive: true,
@@ -125,22 +135,38 @@ props: {
             y: {
               beginAtZero: true,
               ticks: {
-                callback: (value) => `${value} ₽`
-              }
+                callback: (value) => `${value} ₽`,
+              },
+            },
+          },
+          // ✅ onClick ДОЛЖЕН БЫТЬ ВНУТРИ options
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const datasetIndex = elements[0].datasetIndex
+              const index = elements[0].index
+              const monthData = this.monthlyStats[index]
+              const type = datasetIndex === 0 ? 'income' : 'expense'
+              this.$emit('monthClick', { month: monthData.month, type })
             }
-          }
-        }
+          },
+        }, // ✅ ТЕПЕРЬ options ЗАКРЫВАЕТСЯ ЗДЕСЬ
       })
     },
 
     // 🔥 ГЕНЕРАТОР ЦВЕТОВ ДЛЯ ДИАГРАММЫ
     generateColors(count) {
       const colors = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-        '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+        '#FF6384',
+        '#36A2EB',
+        '#FFCE56',
+        '#4BC0C0',
+        '#9966FF',
+        '#FF9F40',
+        '#FF6384',
+        '#C9CBCF',
       ]
       return colors.slice(0, count)
-    }
+    },
   },
 
   beforeUnmount() {
@@ -150,7 +176,7 @@ props: {
     if (this.monthlyChart) {
       this.monthlyChart.destroy()
     }
-  }
+  },
 }
 </script>
 
@@ -166,7 +192,7 @@ props: {
   background: white;
   padding: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .chart-container h3 {

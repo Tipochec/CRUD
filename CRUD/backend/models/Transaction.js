@@ -1,7 +1,7 @@
 const db = require('../database/database') // Подключение к базе данных / её импорт.
 
 class Transaction { 
-  static getAll(callback) { // получение всех транзакций.
+  static getAll(userId, callback) { // получение всех транзакций.
     const sql = `
     SELECT 
       t.*, 
@@ -9,32 +9,34 @@ class Transaction {
       c.color as category_color 
     FROM transactions t 
     LEFT JOIN categories c ON t.category_id = c.id 
+    WHERE t.user_id = ?
     ORDER BY t.created_at DESC
   ` 
-    db.all(sql, [], callback) // all — все строки результата, наша переменная с данными, пустой массив нужен если будут WHERE условия, callback — функция которая получить результат, тоесть возвращаем его в getAll
+    db.all(sql, [userId], callback) // all — все строки результата, наша переменная с данными, пустой массив нужен если будут WHERE условия, callback — функция которая получить результат, тоесть возвращаем его в getAll
   }
 
   static create(transactionData, callback) { // создание транзакции, вносится 2 переменные, с полями и callback, с возвращёными данными.
-    const { amount, category_id, type, description, category_name } = transactionData // по аналогии как и делали раньше, перечисляем все поля и запихиваем их в переменную 
-    const sql = `INSERT INTO transactions (amount, category_id, type, description, category_name, date) 
-               VALUES (?, ?, ?, ?, ?, DATE('now'))`
-    db.run(sql, [amount, category_id, type, description, category_name], callback) // run = выполнить запрос (не возвращает данные) Массив значений подставляется вместо ? по порядку
+    const { amount, category_id, type, description, category_name, user_id  } = transactionData // по аналогии как и делали раньше, перечисляем все поля и запихиваем их в переменную 
+    const sql = `INSERT INTO transactions (amount, category_id, type, description, category_name, date, user_id ) 
+               VALUES (?, ?, ?, ?, ?, DATE('now'), ?)`
+    db.run(sql, [amount, category_id, type, description, category_name, user_id ], callback) // run = выполнить запрос (не возвращает данные) Массив значений подставляется вместо ? по порядку
   }
 
-  static delete(id, callback) { // запрос на удаление
+  static delete(id, userId, callback) { // запрос на удаление
     const sql = `DELETE FROM transactions WHERE id = ?` // удалить из транзакции где Id = переданный ID
-    db.run(sql, [id], callback)
+    db.run(sql, [id, userId], callback)
   }
 
-  static getStats(callback) { // получение данных
+  static getStats(userId, callback) { // получение данных
     const sql = `
       SELECT 
         SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,
         SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expense,
         COUNT(*) as total_transactions
       FROM transactions
+      WHERE user_id = ?
     `
-    db.get(sql, [], callback) // get = получить только ОДНУ строку результата (т.к. статистика одна)
+    db.get(sql, [userId], callback) // get = получить только ОДНУ строку результата (т.к. статистика одна)
   }
 }
 

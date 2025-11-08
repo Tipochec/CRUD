@@ -1,9 +1,5 @@
 <template>
   <div class="home">
-    <div v-if="activeFilter" class="active-filter">
-      <span>Фильтр: {{ activeFilter }}</span>
-      <button @click="clearFilter" class="clear-filter">×</button>
-    </div>
     <div class="stats">
       <div class="stat-card income">
         <h3>Доходы</h3>
@@ -24,8 +20,7 @@
       :transactions="transactions"
       :expensesByCategory="expensesByCategory"
       :monthlyStats="monthlyStats"
-      @categoryClick="handleCategoryClick"
-      @monthClick="handleMonthClick"
+
     />
 
     <div class="transactions-section">
@@ -79,9 +74,6 @@ export default {
       'expensesByCategory',
       'monthlyStats',
     ]),
-    displayTransactions() {
-      return this.activeFilter ? this.filteredTransactions : this.transactions
-    },
   },
 
   methods: {
@@ -89,42 +81,6 @@ export default {
 
     formatDate(dateString) {
       return new Date(dateString).toLocaleDateString('ru-RU')
-    },
-    handleCategoryClick(categoryName) {
-      this.activeFilter = `Категория: ${categoryName}`
-      this.filteredTransactions = this.transactions.filter((t) => t.category_name === categoryName)
-      this.scrollToTransactions()
-    },
-
-    // 🔥 ОБРАБОТКА КЛИКА ПО МЕСЯЦУ
-    handleMonthClick({ month, type }) {
-      const [year, monthNum] = month.split('-')
-      this.activeFilter = `Месяц: ${monthNum}/${year} (${type === 'income' ? 'Доходы' : 'Расходы'})`
-
-      this.filteredTransactions = this.transactions.filter((t) => {
-        const transactionDate = new Date(t.created_at)
-        return (
-          transactionDate.getFullYear() === parseInt(year) &&
-          transactionDate.getMonth() + 1 === parseInt(monthNum) &&
-          t.type === type
-        )
-      })
-      this.scrollToTransactions()
-    },
-
-    // 🔥 СБРОС ФИЛЬТРА
-    clearFilter() {
-      this.activeFilter = null
-      this.filteredTransactions = []
-    },
-
-    // 🔥 ПРОКРУТКА К СПИСКУ ОПЕРАЦИЙ
-    scrollToTransactions() {
-      this.$nextTick(() => {
-        document.querySelector('.transactions-section').scrollIntoView({
-          behavior: 'smooth',
-        })
-      })
     },
   },
 
@@ -139,37 +95,6 @@ export default {
 </script>
 
 <style scoped>
-/* 🔥 СТИЛИ ДЛЯ АКТИВНОГО ФИЛЬТРА */
-.active-filter {
-  background: #e3f2fd;
-  border: 1px solid #2196f3;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  color: #1976d2;
-}
-
-.clear-filter {
-  background: #ff5252;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.clear-filter:hover {
-  background: #d32f2f;
-}
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

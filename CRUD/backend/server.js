@@ -1,7 +1,12 @@
+console.log('🔧 Инициализация сервера...')
+console.log('📁 Текущая директория:', __dirname)
+console.log('🗄️ Подключаемся к БД...')
+
 const express = require('express'); //express - фреймворк для создания сервера
 const cors = require('cors'); //cors - middleware для кросс-доменных запросов
 const transactionsRouter = require('./routes/transactions'); //импорт ссылок на роутер
 const categoriesRouter = require('./routes/categories'); // импорт ссылок на роутер
+const authRouter = require('./routes/auth'); 
 
 
 
@@ -15,6 +20,7 @@ app.use(express.json()); //автоматически парсит JSON из т�
 // Подключаем роуты
 app.use('/api/transactions', transactionsRouter); //ссылка с сайте backenda куда подключаем роуты
 app.use('/api/categories', categoriesRouter); // ссылка с сайте backenda куда подключаем роуты
+app.use('/api/auth', authRouter)
 
 
 // Запуск сервера

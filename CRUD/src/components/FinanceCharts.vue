@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js'
+import Chart from 'chart.js/auto'
 
 export default {
   name: 'FinanceCharts',
@@ -38,7 +38,7 @@ export default {
       required: true,
     },
   },
-  emits: ['categoryClick', 'monthClick'],
+
 
   data() {
     return {
@@ -48,7 +48,7 @@ export default {
   },
 
   mounted() {
-    Chart.register(...registerables)
+
     this.renderCharts()
   },
 
@@ -92,13 +92,6 @@ export default {
               },
             },
           },
-          onClick: (event, elements) => {
-            if (elements.length > 0) {
-              const index = elements[0].index
-              const category = this.expensesByCategory[index]
-              this.$emit('categoryClick', category.name)
-            }
-          },
         },
       })
     },
@@ -138,16 +131,6 @@ export default {
                 callback: (value) => `${value} ₽`,
               },
             },
-          },
-          // ✅ onClick ДОЛЖЕН БЫТЬ ВНУТРИ options
-          onClick: (event, elements) => {
-            if (elements.length > 0) {
-              const datasetIndex = elements[0].datasetIndex
-              const index = elements[0].index
-              const monthData = this.monthlyStats[index]
-              const type = datasetIndex === 0 ? 'income' : 'expense'
-              this.$emit('monthClick', { month: monthData.month, type })
-            }
           },
         }, // ✅ ТЕПЕРЬ options ЗАКРЫВАЕТСЯ ЗДЕСЬ
       })

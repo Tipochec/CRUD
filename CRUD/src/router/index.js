@@ -24,8 +24,8 @@ const router = createRouter({
           component: AddTransactionView
         },
         {
-          path: ' login',
-          name: ' login',
+          path: 'login',
+          name: 'login',
           component: LoginView
         },
         {

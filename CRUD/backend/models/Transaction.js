@@ -23,7 +23,7 @@ class Transaction {
   }
 
   static delete(id, userId, callback) { // запрос на удаление
-    const sql = `DELETE FROM transactions WHERE id = ?` // удалить из транзакции где Id = переданный ID
+    const sql = `DELETE FROM transactions WHERE id = ? AND user_id = ?` // удалить из транзакции где Id = переданный ID
     db.run(sql, [id, userId], callback)
   }
 

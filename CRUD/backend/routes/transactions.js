@@ -22,7 +22,8 @@ router.post('/',authenticateToken,  (req, res) => { // POST отвечает з�
   if (!amount || !type ) { // ВАЛИДАЦИЯ — проверяет, что amount или type не undefiend//null//0
     return res.status(400).json({ error: 'Amount, type and date are required' }); // если же есть ошибка вывводится ошибка 400 "Bad Request" (клиент отправил некорректные данные)
   }
-  Transaction.create({ amount, category_id, type, description, category_name, user_id: req.user.userId }, function(err) { // создание транзакции, берём те же поля из объекта.
+  const user_id = 1;
+  Transaction.create({ amount, category_id, type, description, category_name, user_id }, function(err) { // создание транзакции, берём те же поля из объекта.
     if (err) { // если будет ошибка, выводим её со статусом 500, если же нет, возвращаем значение и идём дальше
       res.status(500).json({ error: err.message });
       return;
